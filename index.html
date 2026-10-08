@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Feral Steakhouse</title>
+
+  <style>
+
+    body {
+      margin: 0;
+      background: #111;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<script>
+
+const SUPABASE_URL =
+  "https://qcvhxrudzjlgqlhvnkkl.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_OpfoWwYD2lvC9dVTT_UT8A_Bvz_GKRw";
+
+const GOOGLE_REVIEW_URL =
+  "https://search.google.com/local/writereview?placeid=ChIJpdHjnsyjpBIRAgHavVJHDpU";
+
+
+fetch(`${SUPABASE_URL}/rest/v1/nfc_events`, {
+
+  method: "POST",
+
+  headers: {
+
+    "Content-Type": "application/json",
+
+    "apikey": SUPABASE_KEY,
+
+    "Authorization": `Bearer ${SUPABASE_KEY}`,
+
+    "Prefer": "return=minimal"
+
+  },
+
+  body: JSON.stringify({
+
+    restaurant: "Feral Steakhouse",
+
+    event: "nfc_tap"
+
+  })
+
+})
+
+.finally(() => {
+
+  window.location.href = GOOGLE_REVIEW_URL;
+
+});
+
+</script>
+
+</body>
+
+</html>
