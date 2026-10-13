@@ -25,7 +25,7 @@
 <body>
   <main>
     <h1>Feral Steakhouse</h1>
-    <p id="status">Abriendo Feral Steakhouse en Google Maps…</p>
+    <p id="status">Abriendo la pantalla de reseñas de Feral Steakhouse en Google…</p>
   </main>
 
   <script>
@@ -34,10 +34,9 @@
     const RESTAURANT = "Feral Steakhouse";
     const EVENTS_TABLE = "nfc_events";
 
-    // Abre la ficha de Feral por nombre y dirección.
-    // Reemplazar por el enlace directo de reseñas cuando se confirme el place ID correcto.
+    // Se conserva el mismo enlace directo de reseñas que utiliza el NFC.
     const GOOGLE_REVIEW_URL =
-      "https://www.google.com/maps/search/?api=1&query=Feral%20Steakhouse%2C%20Carrer%20de%20C%C3%B2rsega%20231%2C%2008036%20Barcelona";
+      "https://search.google.com/local/writereview?placeid=ChIJpdHjnsyjpBIRAgHavVJHDpU";
 
     async function registerQrScan() {
       const controller = new AbortController();
