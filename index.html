@@ -33,6 +33,8 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_OpfoWwYD2lvC9dVTT_UT8A_Bvz_GKRw";
 
+function detectDeviceType(){const ua=navigator.userAgent||'';if(/iPad|iPhone|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))return 'iPhone/iPad';if(/Android/i.test(ua))return 'Android';if(/Windows NT|Macintosh|Mac OS X|Linux x86_64|CrOS/i.test(ua))return 'PC/Mac';return 'Desconocido';}
+
 const GOOGLE_REVIEW_URL =
   "https://search.google.com/local/writereview?placeid=ChIJpdHjnsyjpBIRAgHavVJHDpU";
 
@@ -57,7 +59,8 @@ fetch(`${SUPABASE_URL}/rest/v1/nfc_events`, {
 
     restaurant: "Feral Steakhouse",
 
-    event: "nfc_tap"
+    event: "nfc_tap",
+    device_type: detectDeviceType()
 
   })
 
