@@ -31,37 +31,63 @@
   <script>
     const SUPABASE_URL = "https://qcvhxrudzjlgqlhvnkkl.supabase.co";
     const SUPABASE_KEY = "sb_publishable_OpfoWwYD2lvC9dVTT_UT8A_Bvz_GKRw";
-    function detectDeviceType(){const ua=navigator.userAgent||'';if(/iPad|iPhone|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))return 'iPhone/iPad';if(/Android/i.test(ua))return 'Android';if(/Windows NT|Macintosh|Mac OS X|Linux x86_64|CrOS/i.test(ua))return 'PC/Mac';return 'Desconocido';}
 
-    const RESTAURANT = "Feral Steakhouse";
-    const EVENTS_TABLE = "nfc_events";
+    // Tarjeta QR independiente de la tarjeta NFC.
+    const QR_CARD_ID = "22222222-2222-4222-8222-222222222222";
+    const QR_TOKEN_HASH = "5af66f6243f47c84120d1a73e492e8852d7a219bebf49d2cceb7c3423e901ac0";
 
-    // Se conserva el mismo enlace directo de reseñas que utiliza el NFC.
     const GOOGLE_REVIEW_URL =
       "https://search.google.com/local/writereview?placeid=ChIJpdHjnsyjpBIRAgHavVJHDpU";
+
+    function detectDeviceType() {
+      const ua = navigator.userAgent || "";
+      if (/iPad|iPhone|iPod/i.test(ua) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+        return "mobile";
+      }
+      if (/Android/i.test(ua)) {
+        return /Mobile/i.test(ua) ? "mobile" : "tablet";
+      }
+      if (/Tablet|iPad/i.test(ua)) return "tablet";
+      if (/Windows NT|Macintosh|Mac OS X|Linux x86_64|CrOS/i.test(ua)) {
+        return "desktop";
+      }
+      return "unknown";
+    }
 
     async function registerQrScan() {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 1800);
 
       try {
-        await fetch(`${SUPABASE_URL}/rest/v1/${EVENTS_TABLE}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`,
-            "Prefer": "return=minimal"
-          },
-          body: JSON.stringify({
-            restaurant: RESTAURANT,
-            event: "qr_scan",
-            device_type: detectDeviceType()
-          }),
-          signal: controller.signal
-        });
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/register-nfc-event`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "apikey": SUPABASE_KEY,
+              "Authorization": `Bearer ${SUPABASE_KEY}`
+            },
+            body: JSON.stringify({
+              card_id: QR_CARD_ID,
+              token_hash: QR_TOKEN_HASH,
+              device_type: detectDeviceType()
+            }),
+            signal: controller.signal
+          }
+        );
+
+        if (!response.ok) {
+          console.error("No se pudo registrar el escaneo QR. HTTP:", response.status);
+        } else {
+          const result = await response.json();
+          if (result.ok !== true) {
+            console.error("El registro QR fue rechazado:", result.error || "error desconocido");
+          }
+        }
       } catch (error) {
-        console.error("No se pudo registrar el escaneo QR:", error);
+        console.error("Error al registrar el escaneo QR:", error);
       } finally {
         clearTimeout(timeout);
         window.location.replace(GOOGLE_REVIEW_URL);
